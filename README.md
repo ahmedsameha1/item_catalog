@@ -36,3 +36,15 @@ https://stackoverflow.com/a/33532154 by: Jeff Widman.
 https://stackoverflow.com/a/3792292 by: David Johnstone.
 
 https://classroom.udacity.com/nanodegrees/nd004-mena/parts/69a88e43-c2b6-4475-be2b-d6bf58409313/modules/a086501e-a1ff-4b97-8b43-958d58a5a2e4/lessons/d1a03215-1295-4b17-97a3-f0d6e4d8b794/concepts/36483886240923
+
+https://www.youtube.com/watch?v=kRNXKzfYrPU
+
+http://flask-marshmallow.readthedocs.io/en/latest/
+
+https://github.com/marshmallow-code/flask-marshmallow/issues/50
+
+https://marshmallow-sqlalchemy.readthedocs.io/en/latest/recipes.html#smart-nested-field
+
+https://stackoverflow.com/a/598407 by: Adam Rosenfield
+
+http://book.pythontips.com/en/latest/map_filter.html

@@ -1,6 +1,13 @@
 ///////////////////////////////////////////////  pip install Flask-SQLAlchemy          /////////////////////////////////
 ///////////////////////////////////////////////  pip install flask_login          /////////////////////////////////
 
+///////////////////////////////////////////////  pip install marshmallow-sqlalchemy          /////////////////////////////////
+
+///////////////////////////////////////////////  pip install flask-marshmallow          /////////////////////////////////
+///////////////////////////////////////////////  pip install flask-dance          /////////////////////////////////
+///////////////////////////////////////////////  pip install blinker          /////////////////////////////////
+///////////////////////////////////////////////  export OAUTHLIB_INSECURE_TRANSPORT=1          /////////////////////////////////
+///////////////////////////////////////////////  flask_dance sqla          /////////////////////////////////
 
 ATTRIBUTIONS
 ============
@@ -48,3 +55,19 @@ https://marshmallow-sqlalchemy.readthedocs.io/en/latest/recipes.html#smart-neste
 https://stackoverflow.com/a/598407 by: Adam Rosenfield
 
 http://book.pythontips.com/en/latest/map_filter.html
+
+https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Getting_started
+
+https://github.com/ahmedsameha1/memory_game_project/blob/master/index.html
+
+https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag
+
+https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-3/10_url_for-Solution/menu.html
+
+https://www.youtube.com/watch?v=MiHVTHzIgyE
+
+https://www.youtube.com/watch?v=G44Tpi58dcc
+
+http://flask-dance.readthedocs.io/en/latest/quickstarts/google.html
+
+https://stackoverflow.com/a/20382542 by: codegeek.

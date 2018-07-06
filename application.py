@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin
 from sqlalchemy.sql import func
@@ -8,6 +8,7 @@ from flask import jsonify
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
@@ -44,24 +45,128 @@ category_schema = CategorySchema(exclude=["user"])
 items_schema = ItemSchema(many=True, exclude=["category"])
 item_schema = ItemSchema(exclude=["category"])
 
-# must be dynamic
-hany = User.query.filter_by(id="hany").one()
-categories = hany.categories
 
 @app.route("/catalog.json")
 def index_json():
-    return jsonify(categories_schema.dump(categories).data)
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        return jsonify(categories_schema.dump(categories).data)
+    except IndexError:
+        return jsonify("Resource Error")
 
-@app.route("/catalog/category/<int:category>/items.json")
+@app.route("/catalog/category/<int:category>/json")
 def items_json(category):
-    cat_obj = [x for x in categories if x.id == category][0]
-    return jsonify(items_schema.dump(cat_obj.items).data)
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category][0]
+        return jsonify(items_schema.dump(cat_obj.items).data)
+    except IndexError:
+        return jsonify("Resource Error")
 
-@app.route("/catalog/category/<int:category>/items/<int:item>/json")
+@app.route("/catalog/category/<int:category>/item/<int:item>/json")
 def item_json(category, item):
-    cat_obj = [x for x in categories if x.id == category][0]
-    item_obj = [ n for n in cat_obj.items if n.id == item][0]
-    return jsonify(item_schema.dump(item_obj).data)
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category][0]
+        item_obj = [ n for n in cat_obj.items if n.id == item][0]
+        return jsonify(item_schema.dump(item_obj).data)
+    except IndexError:
+        return jsonify("Resource Error")
+
+@app.route("/catalog")
+def catalog():
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        last_items = []
+        for i in categories:
+            items = i.items
+            sorted_items = sorted(items, key=lambda item: item.id, reverse=True)
+            if len(sorted_items) > 0:
+                last_items.append(( i.name, sorted_items[0]))
+        return render_template("catalog.html", cats=categories, last_items=last_items)
+    except IndexError:
+        return render_template("resource_error.html")
+
+@app.route("/catalog/category/<int:category_id>")
+def category(category_id):
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category_id][0]
+        return render_template("category.html", cat=cat_obj)
+    except IndexError:
+        return render_template("resource_error.html")
+
+@app.route("/catalog/category/<int:category_id>/item/new", methods=["GET", "POST"])
+def new_item(category_id):
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category_id][0]
+        if request.method == "GET":
+            return render_template("new_item.html", cat=cat_obj)
+        elif request.method == "POST":
+            print db.session is db.session
+            item_obj = Item(name=request.form["name"], description=request.form["description"], category=cat_obj)
+            db.session.add(item_obj)
+            db.session.commit()
+            return redirect(url_for("category", category_id=cat_obj.id))
+    except IndexError:
+        return render_template("resource_error.html")
+
+@app.route("/catalog/category/<int:category_id>/item/<int:item_id>")
+def item(category_id, item_id):
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category_id][0]
+        item_obj = [ n for n in cat_obj.items if n.id == item_id][0]
+        return render_template("item.html", cat=cat_obj, item=item_obj)
+    except IndexError:
+        return render_template("resource_error.html")
+
+
+@app.route("/catalog/category/<int:category_id>/item/<int:item_id>/delete", methods=["GET","POST"])
+def delete_item(category_id, item_id):
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category_id][0]
+        item_obj = [ n for n in cat_obj.items if n.id == item_id][0]
+        if request.method == "GET":
+            return render_template("delete_item.html", cat=cat_obj, item=item_obj)
+        elif request.method == "POST":
+            db.session.delete(item_obj)
+            db.session.commit()
+            return redirect(url_for("category", category_id=cat_obj.id))
+    except IndexError:
+        return render_template("resource_error.html")
+
+@app.route("/catalog/category/<int:category_id>/item/<int:item_id>/edit", methods=["GET","POST"])
+def edit_item(category_id, item_id):
+    try:
+        hany = User.query.filter_by(id="hany").one()
+        categories = hany.categories
+        cat_obj = [x for x in categories if x.id == category_id][0]
+        item_obj = [ n for n in cat_obj.items if n.id == item_id][0]
+        if request.method == "GET":
+            return render_template("edit_item.html", cat=cat_obj,
+                    item=item_obj, categories=categories)
+        elif request.method == "POST":
+            item_obj.name = request.form["name"]
+            item_obj.description = request.form["description"]
+            selected_category = [x for x in categories if x.name == request.form["category"]][0]
+            item_obj.category = selected_category
+            db.session.add(item_obj)
+            db.session.commit()
+            return redirect(url_for("category", category_id=selected_category.id))
+    except IndexError:
+        return render_template("resource_error.html")
 
 if __name__ == "__main__":
+    # must be dynamic
     app.run(host="0.0.0.0", port=5000, debug=True)

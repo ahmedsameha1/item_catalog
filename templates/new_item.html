@@ -1,0 +1,17 @@
+{% extends "skeleton.html" %}
+{% block title %} {{ "Add Item" }} {% endblock %}
+{% block body %}
+<h1>{{ cat.name }}</h1>
+<h2>Add a new item</h2>
+<form action="" method="post">
+    <p>Name:</p>
+    <input type="input" placeholder="Name?" name="name"/>
+    <p>Description:</p>
+    <textarea placeholder="Description?" name="description"
+        rows="4" cols="30" wrap="hard"></textarea>
+    <br/>
+    <br/>
+    <button>Create</button>
+</form>
+
+{% endblock %}

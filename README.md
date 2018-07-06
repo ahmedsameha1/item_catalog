@@ -42,6 +42,10 @@ https://stackoverflow.com/a/33532154 by: Jeff Widman.
 
 https://stackoverflow.com/a/3792292 by: David Johnstone.
 
+https://classroom.udacity.com/nanodegrees/nd004-mena/parts/69a88e43-c2b6-4475-be2b-d6bf58409313
+
+https://classroom.udacity.com/nanodegrees/nd004-mena/parts/a8609286-c119-4bc5-b9c9-2a3828080114
+
 https://classroom.udacity.com/nanodegrees/nd004-mena/parts/69a88e43-c2b6-4475-be2b-d6bf58409313/modules/a086501e-a1ff-4b97-8b43-958d58a5a2e4/lessons/d1a03215-1295-4b17-97a3-f0d6e4d8b794/concepts/36483886240923
 
 https://www.youtube.com/watch?v=kRNXKzfYrPU
@@ -71,3 +75,29 @@ https://www.youtube.com/watch?v=G44Tpi58dcc
 http://flask-dance.readthedocs.io/en/latest/quickstarts/google.html
 
 https://stackoverflow.com/a/20382542 by: codegeek.
+
+http://flask.pocoo.org/docs/1.0/patterns/templateinheritance/
+
+https://stackoverflow.com/a/1466550 by: Alex Martelli.
+
+http://flask.pocoo.org/docs/1.0/tutorial/templates/
+
+https://wiki.python.org/moin/HowTo/Sorting
+
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+
+https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-3/11_form-requests-and-redirects/newmenuitem.html
+
+https://stackoverflow.com/questions/16529660/flask-sqlalchemy-invalidrequesterror-object-is-already-attached-to-session
+
+https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-3/14_Delete-Menu-Item/deletemenuitem.html
+
+https://github.com/udacity/Full-Stack-Foundations/blob/master/Lesson-3/15_Delete-Menu-Item-Solution/project.py
+
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
+
+https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+
+https://stackoverflow.com/a/32020159 by: Robᵩ.
+
+https://stackoverflow.com/a/10805559 by: zessx.

@@ -1,0 +1,16 @@
+{% extends "skeleton.html" %}
+{% block title %} Catalog: {{ cat.name}} {% endblock %}
+{% block body %}
+<h1>{{ cat.name }}</h2>
+{% if cat.items|length == 0 %}
+<h5>Currently, there is no items in this category</h5>
+{% else %}
+<a href={{ url_for("new_item", category_id=cat.id) }}>Add Item</a>
+<ul>
+    {% for k in cat.items %}
+    <li><a href={{ url_for("item", category_id=cat.id,
+            item_id=k.id) }}>{{ k.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "skeleton.html" %}
+{% block title %} Delete: {{item.name}} {% endblock %}
+{% block body %}
+<h1>Are you sure that you want to delete this item?</h1>
+<h2>Item: {{item.name}}</h2>
+<h5>Category: {{ cat.name }}</h5>
+<p>Description:</p>
+<p>{{item.description}}</p>
+<br>
+<form action={{ url_for("delete_item", category_id=cat.id,
+    item_id=item.id) }} method="post">
+    <button>Delete</button>
+</form>
+{% endblock %}

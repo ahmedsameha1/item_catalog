@@ -1,0 +1,12 @@
+{% extends "skeleton.html" %}
+{% block title %} Item Catalog {% endblock %}
+{% block body %}
+<ul>
+    {% for k in cats %}
+    <li><a href={{ url_for("category", category_id=k.id) }}>{{ k.name }}</a></li>
+    {% endfor %}
+    {% for i in last_items %}
+    <li>{{i[1].name}} ({{ i[0] }})</li>
+    {% endfor %}
+</ul>
+{% endblock %}

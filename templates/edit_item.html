@@ -1,0 +1,26 @@
+{% extends "skeleton.html" %}
+{% block title %} Edit item: {{ item.name }} {% endblock %}
+{% block body %}
+<h1>Edit item: {{item.name}}</h1>
+<h5>Category: {{ cat.name }}</h5>
+<form action="" method="post">
+    <p>Name:</p>
+    <input type="input" value={{ item.name }} name="name"/>
+    <p>Description:</p>
+    <textarea name="description"
+        rows="4" cols="30" wrap="hard">{{ item.description }}</textarea>
+    <br/>
+    <select name="category">
+        {% for i in categories %}
+        {%if cat.name != i.name %}
+        <option value="{{ i.name }}">{{ i.name }}</option>
+        {% else %}
+        <option value="{{ i.name }}" selected>{{ i.name }}</option>
+        {% endif %}
+        {% endfor %}
+    </select>
+    <br/>
+    <br/>
+    <button>Save</button>
+</form>
+{% endblock %}

@@ -11,15 +11,24 @@ from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBack
 from flask_dance.consumer import oauth_authorized
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog777"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.secret_key = "weortfhweghweog"
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+login_manager = LoginManager(app)
+
+google_blueprint = make_google_blueprint( client_id="912137232701-omul0gsrmg6ku5b347ma2kr4uk0ja9de.apps.googleusercontent.com", client_secret="4v7ddYKtufP5SIRRrBrnQS6P", scope = ["profile", "email"])
+
+app.register_blueprint(google_blueprint, url_prefix="/login")
 
 class User(db.Model, UserMixin):
     id = db.Column(db.String(50), primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
     categories = db.relationship("Category", backref="user")
+
+class Authentication(OAuthConsumerMixin, db.Model):
+    user_id = db.Column(db.String(50), db.ForeignKey(User.id))
+    user = db.relationship(User)
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -49,8 +58,40 @@ category_schema = CategorySchema(exclude=["user"])
 items_schema = ItemSchema(many=True, exclude=["category"])
 item_schema = ItemSchema(exclude=["category"])
 
+google_blueprint.backend = SQLAlchemyBackend(Authentication, db.session, user=current_user)
+
+@login_manager.user_loader
+def user_load(user_id):
+    return User.query.get(user_id)
+
+@oauth_authorized.connect_via(google_blueprint)
+def logged_in(blueprint, token):
+    account_info = blueprint.session(token).get("/oauth2/v2/userinfo")
+    if account_info.ok:
+        email = account_info.json()["email"]
+        query = User.query.filter_by(id=email)
+        try:
+            user = query.one()
+        except NoResultFound:
+            user = User(id=email)
+            db.session.add(user)
+            db.session.commit(user)
+        login_user(user)
+
+@app.route("/")
+def login():
+    if not google.authorized:
+        return render_template("login.html")
+    else:
+        return redirect(url_for("catalog"))
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
 
 @app.route("/catalog.json")
+@login_required
 def index_json():
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -60,6 +101,7 @@ def index_json():
         return jsonify("Resource Error")
 
 @app.route("/catalog/category/<int:category>/json")
+@login_required
 def items_json(category):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -70,6 +112,7 @@ def items_json(category):
         return jsonify("Resource Error")
 
 @app.route("/catalog/category/<int:category>/item/<int:item>/json")
+@login_required
 def item_json(category, item):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -81,6 +124,7 @@ def item_json(category, item):
         return jsonify("Resource Error")
 
 @app.route("/catalog")
+@login_required
 def catalog():
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -96,6 +140,7 @@ def catalog():
         return render_template("resource_error.html")
 
 @app.route("/catalog/category/<int:category_id>")
+@login_required
 def category(category_id):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -106,6 +151,7 @@ def category(category_id):
         return render_template("resource_error.html")
 
 @app.route("/catalog/category/<int:category_id>/item/new", methods=["GET", "POST"])
+@login_required
 def new_item(category_id):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -123,6 +169,7 @@ def new_item(category_id):
         return render_template("resource_error.html")
 
 @app.route("/catalog/category/<int:category_id>/item/<int:item_id>")
+@login_required
 def item(category_id, item_id):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -135,6 +182,7 @@ def item(category_id, item_id):
 
 
 @app.route("/catalog/category/<int:category_id>/item/<int:item_id>/delete", methods=["GET","POST"])
+@login_required
 def delete_item(category_id, item_id):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -151,6 +199,7 @@ def delete_item(category_id, item_id):
         return render_template("resource_error.html")
 
 @app.route("/catalog/category/<int:category_id>/item/<int:item_id>/edit", methods=["GET","POST"])
+@login_required
 def edit_item(category_id, item_id):
     try:
         hany = User.query.filter_by(id="hany").one()
@@ -172,5 +221,4 @@ def edit_item(category_id, item_id):
         return render_template("resource_error.html")
 
 if __name__ == "__main__":
-    # must be dynamic
     app.run(host="0.0.0.0", port=5000, debug=True)

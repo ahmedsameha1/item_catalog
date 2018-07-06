@@ -1,10 +1,14 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin
+from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from sqlalchemy.sql import func
 from flask_marshmallow import Marshmallow
 from marshmallow import fields
 from flask import jsonify
+from sqlalchemy.orm.exc import NoResultFound
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBackend
+from flask_dance.consumer import oauth_authorized
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog"

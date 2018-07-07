@@ -75,7 +75,7 @@ def user_load(user_id):
 
 @login_manager.unauthorized_handler
 def redirect_login():
-    return redirect(url_for("login", next=request.endpoint))
+    return redirect(url_for("login"))
 
 @oauth_authorized.connect_via(google_blueprint)
 def logged_in(blueprint, token):
@@ -89,14 +89,11 @@ def logged_in(blueprint, token):
             user = create_user(email)
         login_user(user)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def login():
     if not google.authorized:
-        print "unauthorized"
         return render_template("login.html")
     else:
-        print "authorized"
-        print request.query_string
         return redirect(url_for("catalog"))
 
 @app.route("/logout")

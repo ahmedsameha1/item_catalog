@@ -2,6 +2,7 @@
 {% block title %} Item: {{ item.name }} {% endblock %}
 {% block body %}
 <a href={{url_for("catalog")}}>Catalog</a>
+<a href={{ url_for("category", category_id=cat.id) }}>{{ cat.name }}</a>
 <h1>Item: {{item.name}}</h1>
 <h5>Category: {{ cat.name }}</h5>
 <p>Description:</p>

@@ -1,5 +1,12 @@
-{% extends "skeleton.html" %}
-{% block title %} Login {% endblock %}
-{% block body %}
-<a href={{ url_for("google_login") }}>Login</a>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- The following line from: https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body>
+        <a href={{ url_for("google.login") }}>Login</a>
+    </body>
+</html>

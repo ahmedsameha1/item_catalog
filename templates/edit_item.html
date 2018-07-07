@@ -1,6 +1,7 @@
 {% extends "skeleton.html" %}
 {% block title %} Edit item: {{ item.name }} {% endblock %}
 {% block body %}
+<a href={{url_for("catalog")}}>Catalog</a>
 <h1>Edit item: {{item.name}}</h1>
 <h5>Category: {{ cat.name }}</h5>
 <form action="" method="post">

@@ -101,3 +101,11 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
 https://stackoverflow.com/a/32020159 by: Robᵩ.
 
 https://stackoverflow.com/a/10805559 by: zessx.
+
+https://stackoverflow.com/a/48718671 by: singingwolfboy.
+
+http://docs.sqlalchemy.org/en/latest/orm/session_basics.html
+
+https://stackoverflow.com/a/23146756 by: Avi Das.
+
+https://stackoverflow.com/a/36284881 by: timakro.

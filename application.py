@@ -11,7 +11,7 @@ from flask_dance.consumer.backend.sqla import OAuthConsumerMixin, SQLAlchemyBack
 from flask_dance.consumer import oauth_authorized
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog777"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog888"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = "weortfhweghweog"
 db = SQLAlchemy(app)
@@ -58,44 +58,58 @@ category_schema = CategorySchema(exclude=["user"])
 items_schema = ItemSchema(many=True, exclude=["category"])
 item_schema = ItemSchema(exclude=["category"])
 
-google_blueprint.backend = SQLAlchemyBackend(Authentication, db.session, user=current_user)
+google_blueprint.backend = SQLAlchemyBackend(Authentication, db.session, user_required=False, user=current_user)
+
+def create_user(email):
+    user = User(id=email)
+    db.session.add(user)
+    db.session.add_all([Category(name="Soccer", user=user),Category(name="Basketball", user=user),
+        Category(name="Baseball", user=user),Category(name="Frisbee", user=user),Category(name="Snowboarding", user=user),
+    Category(name="Rock Climbing", user=user),Category(name="Foosball", user=user),Category(name="Skating", user=user),Category(name="Hockey", user=user)])
+    db.session.commit()
+    return user
 
 @login_manager.user_loader
 def user_load(user_id):
     return User.query.get(user_id)
 
+@login_manager.unauthorized_handler
+def redirect_login():
+    return redirect(url_for("login", next=request.endpoint))
+
 @oauth_authorized.connect_via(google_blueprint)
 def logged_in(blueprint, token):
-    account_info = blueprint.session(token).get("/oauth2/v2/userinfo")
+    account_info = google.get("/oauth2/v2/userinfo")
     if account_info.ok:
         email = account_info.json()["email"]
         query = User.query.filter_by(id=email)
         try:
             user = query.one()
         except NoResultFound:
-            user = User(id=email)
-            db.session.add(user)
-            db.session.commit(user)
+            user = create_user(email)
         login_user(user)
 
 @app.route("/")
 def login():
     if not google.authorized:
+        print "unauthorized"
         return render_template("login.html")
     else:
+        print "authorized"
+        print request.query_string
         return redirect(url_for("catalog"))
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
+    return redirect(url_for("login"))
 
 @app.route("/catalog.json")
 @login_required
 def index_json():
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         return jsonify(categories_schema.dump(categories).data)
     except IndexError:
         return jsonify("Resource Error")
@@ -104,8 +118,7 @@ def index_json():
 @login_required
 def items_json(category):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category][0]
         return jsonify(items_schema.dump(cat_obj.items).data)
     except IndexError:
@@ -115,8 +128,7 @@ def items_json(category):
 @login_required
 def item_json(category, item):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category][0]
         item_obj = [ n for n in cat_obj.items if n.id == item][0]
         return jsonify(item_schema.dump(item_obj).data)
@@ -127,8 +139,7 @@ def item_json(category, item):
 @login_required
 def catalog():
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         last_items = []
         for i in categories:
             items = i.items
@@ -143,8 +154,7 @@ def catalog():
 @login_required
 def category(category_id):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category_id][0]
         return render_template("category.html", cat=cat_obj)
     except IndexError:
@@ -154,8 +164,7 @@ def category(category_id):
 @login_required
 def new_item(category_id):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category_id][0]
         if request.method == "GET":
             return render_template("new_item.html", cat=cat_obj)
@@ -172,8 +181,7 @@ def new_item(category_id):
 @login_required
 def item(category_id, item_id):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [ n for n in cat_obj.items if n.id == item_id][0]
         return render_template("item.html", cat=cat_obj, item=item_obj)
@@ -185,8 +193,7 @@ def item(category_id, item_id):
 @login_required
 def delete_item(category_id, item_id):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [ n for n in cat_obj.items if n.id == item_id][0]
         if request.method == "GET":
@@ -202,8 +209,7 @@ def delete_item(category_id, item_id):
 @login_required
 def edit_item(category_id, item_id):
     try:
-        hany = User.query.filter_by(id="hany").one()
-        categories = hany.categories
+        categories = current_user.categories
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [ n for n in cat_obj.items if n.id == item_id][0]
         if request.method == "GET":

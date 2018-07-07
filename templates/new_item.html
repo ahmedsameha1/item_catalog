@@ -1,6 +1,7 @@
 {% extends "skeleton.html" %}
 {% block title %} {{ "Add Item" }} {% endblock %}
 {% block body %}
+<a href={{url_for("catalog")}}>Catalog</a>
 <h1>{{ cat.name }}</h1>
 <h2>Add a new item</h2>
 <form action="" method="post">

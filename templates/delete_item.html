@@ -1,6 +1,7 @@
 {% extends "skeleton.html" %}
 {% block title %} Delete: {{item.name}} {% endblock %}
 {% block body %}
+<a href={{url_for("catalog")}}>Catalog</a>
 <h1>Are you sure that you want to delete this item?</h1>
 <h2>Item: {{item.name}}</h2>
 <h5>Category: {{ cat.name }}</h5>

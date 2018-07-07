@@ -1,9 +1,11 @@
 {% extends "skeleton.html" %}
 {% block title %} Catalog: {{ cat.name}} {% endblock %}
 {% block body %}
+<a href={{url_for("catalog")}}>Catalog</a>
 <h1>{{ cat.name }}</h2>
 {% if cat.items|length == 0 %}
 <h5>Currently, there is no items in this category</h5>
+<a href={{ url_for("new_item", category_id=cat.id) }}>Add Item</a>
 {% else %}
 <a href={{ url_for("new_item", category_id=cat.id) }}>Add Item</a>
 <ul>

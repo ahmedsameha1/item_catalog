@@ -7,6 +7,7 @@
         <title>{% block title %}{% endblock %}</title>
     </head>
     <body>
+        <a href={{url_for("logout")}}>Logout</a>
         {% block body %}{% endblock %}
     </body>
 </html>

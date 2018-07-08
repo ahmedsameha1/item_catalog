@@ -9,6 +9,12 @@
 ///////////////////////////////////////////////  export OAUTHLIB_INSECURE_TRANSPORT=1          /////////////////////////////////
 ///////////////////////////////////////////////  flask_dance sqla          /////////////////////////////////
 
+
+DEPENDENCIES
+============
+
+https://getbootstrap.com/
+
 ATTRIBUTIONS
 ============
 
@@ -109,3 +115,15 @@ http://docs.sqlalchemy.org/en/latest/orm/session_basics.html
 https://stackoverflow.com/a/23146756 by: Avi Das.
 
 https://stackoverflow.com/a/36284881 by: timakro.
+
+https://getbootstrap.com/docs/4.1/getting-started/download/
+
+https://www.youtube.com/watch?v=5GcQtLDGXy8&t=374s
+
+https://stackoverflow.com/a/42887127 by: Robert Went.
+
+https://getbootstrap.com/docs/4.0/components/list-group/
+
+http://flask.pocoo.org/docs/0.12/tutorial/templates/#layout-html
+
+https://stackoverflow.com/questions/25034812/use-a-css-stylesheet-on-a-jinja2-template

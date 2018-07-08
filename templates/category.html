@@ -2,17 +2,12 @@
 {% block title %} Catalog: {{ cat.name}} {% endblock %}
 {% block body %}
 <a href={{url_for("catalog")}}>Catalog</a>
-<h1>{{ cat.name }}</h2>
-{% if cat.items|length == 0 %}
-<h5>Currently, there is no items in this category</h5>
-<a href={{ url_for("new_item", category_id=cat.id) }}>Add Item</a>
-{% else %}
-<a href={{ url_for("new_item", category_id=cat.id) }}>Add Item</a>
-<ul>
+<h2 class="page-header text-center">{{ cat.name }}</h2>
+<h5 class="text-center"><a href={{ url_for("new_item", category_id=cat.id) }}>Add an Item</a></h5>
+<ul class="list-group">
     {% for k in cat.items %}
-    <li><a href={{ url_for("item", category_id=cat.id,
+    <li class="list-group-item"><a href={{ url_for("item", category_id=cat.id,
             item_id=k.id) }}>{{ k.name }}</a></li>
     {% endfor %}
 </ul>
-{% endif %}
 {% endblock %}

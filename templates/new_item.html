@@ -2,18 +2,21 @@
 {% block title %} {{ "Add Item" }} {% endblock %}
 {% block body %}
 <a href={{url_for("catalog")}}>Catalog</a>
+<span>>></span>
 <a href={{ url_for("category", category_id=cat.id) }}>{{ cat.name }}</a>
-<h1>{{ cat.name }}</h1>
-<h2>Add a new item</h2>
+<h3 class="text-center">Add a new item</h3>
+<div class="item_info">
 <form action="" method="post">
-    <p>Name:</p>
+        <div><label><strong>Name:</strong></label></div>
     <input type="input" placeholder="Name?" name="name"/>
-    <p>Description:</p>
+    <br/><br/>
+    <div><label><strong>Description:</strong></label></div>
     <textarea placeholder="Description?" name="description"
         rows="4" cols="30" wrap="hard"></textarea>
     <br/>
     <br/>
-    <button>Create</button>
+    <button class="submit">Create</button>
 </form>
+</div>
 
 {% endblock %}

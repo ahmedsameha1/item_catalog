@@ -1,12 +1,24 @@
-{% extends "skeleton.html" %}
-{% block title %} Item Catalog {% endblock %}
+{% extends "skeleton.html" %} 
+{% block title %} Item Catalog {% endblock %} 
 {% block body %}
-<ul>
-    {% for k in cats %}
-    <li><a href={{ url_for("category", category_id=k.id) }}>{{ k.name }}</a></li>
-    {% endfor %}
-    {% for i in last_items %}
-    <li>{{i[1].name}} ({{ i[0] }})</li>
-    {% endfor %}
-</ul>
+<div class="row">
+    <div class="col-6">
+        <ul class="list-group">
+            {% for k in cats %}
+            <li class="list-group-item">
+                <a href={{ url_for( "category", category_id=k.id) }} >{{ k.name }}</a>
+                <span class="badge badge-primary">{{k.items|length}}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-6">
+        <ul class="list-group">
+            <h5>Last Items</h5>
+            {% for i in last_items %}
+            <li class="list-group-item">{{i[1].name}} ({{ i[0] }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

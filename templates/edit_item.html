@@ -2,18 +2,20 @@
 {% block title %} Edit item: {{ item.name }} {% endblock %}
 {% block body %}
 <a href={{url_for("catalog")}}>Catalog</a>
+<span>>></span>
 <a href={{ url_for("category", category_id=cat.id) }}>{{ cat.name }}</a>
+<span>>></span>
 <a href={{ url_for("item", category_id=cat.id,
             item_id=item.id) }}>{{ item.name }}</a>
-<h1>Edit item: {{item.name}}</h1>
-<h5>Category: {{ cat.name }}</h5>
+            <div class="item_info">
 <form action="" method="post">
-    <p>Name:</p>
+    <div><label><strong>Name:</strong></label></div>
     <input type="input" value={{ item.name }} name="name"/>
-    <p>Description:</p>
+    <br/><br/>
+    <div><label><strong>Description:</strong></label></div>
     <textarea name="description"
         rows="4" cols="30" wrap="hard">{{ item.description }}</textarea>
-    <br/>
+    <br/><br/>
     <select name="category">
         {% for i in categories %}
         {%if cat.name != i.name %}
@@ -25,6 +27,6 @@
     </select>
     <br/>
     <br/>
-    <button>Save</button>
-</form>
+    <button class="submit">Save</button>
+</form></div>
 {% endblock %}

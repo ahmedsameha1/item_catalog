@@ -4,9 +4,19 @@
         <!-- The following line from: https://developer.mozilla.org/en-US/docs/Mozilla/Mobile/Viewport_meta_tag -->
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
+        <!-- The following line is copied from https://getbootstrap.com/docs/4.1/getting-started/download/ -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+        <link rel="stylesheet" href={{ url_for("static", filename="style.css")}}
         <title>{% block title %}{% endblock %}</title>
     </head>
     <body>
-        <a href={{ url_for("google.login") }}>Login</a>
+            <div class="container">
+                <header>
+                    <h1 class="text-center">Item Catalog</h1></header>
+
+        <div class="log">
+            <a href={{ url_for("google.login") }} >Login</a>
+        </div>
+        </div>
     </body>
 </html>

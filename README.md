@@ -1,14 +1,57 @@
-///////////////////////////////////////////////  pip install Flask-SQLAlchemy          /////////////////////////////////
-///////////////////////////////////////////////  pip install flask_login          /////////////////////////////////
+HOW TO RUN
+==========
 
-///////////////////////////////////////////////  pip install marshmallow-sqlalchemy          /////////////////////////////////
+Install https://www.virtualbox.org/
 
-///////////////////////////////////////////////  pip install flask-marshmallow          /////////////////////////////////
-///////////////////////////////////////////////  pip install flask-dance          /////////////////////////////////
-///////////////////////////////////////////////  pip install blinker          /////////////////////////////////
-///////////////////////////////////////////////  export OAUTHLIB_INSECURE_TRANSPORT=1          /////////////////////////////////
-///////////////////////////////////////////////  flask_dance sqla          /////////////////////////////////
+Install https://www.vagrantup.com/
 
+Create a directory and name it vagrant.
+
+Download this file on the vagrant directory: https://github.com/udacity/fullstack-nanodegree-vm/blob/master/vagrant/Vagrantfile
+
+Clone this repository to the vagrant directory
+
+Using your command line go to the vagrant directory
+
+Run vagrant up
+
+Run vagrant ssh
+
+Run export OAUTHLIB_INSECURE_TRANSPORT=1
+
+Install flask-sqlalchemy https://github.com/mitsuhiko/flask-sqlalchemy
+
+Install flask-login http://flask-login.readthedocs.io/en/latest/#installation
+
+Install marchmallow-sqlalchemy https://github.com/marshmallow-code/marshmallow-sqlalchemy
+
+Install flask-marshmallow http://flask-marshmallow.readthedocs.io/en/latest/
+
+Install flask-dance https://github.com/singingwolfboy/flask-dance
+
+Install blinker https://pypi.org/project/blinker/
+
+Install flask-dance[sqla] http://flask-dance.readthedocs.io/en/latest/install.html
+
+Run psql
+
+On psql, run: create database item_catalog;
+
+Exit psql using \q
+
+Change directory to item_catalog in the vagrant directory
+
+Run: python
+
+Inside python interpreter run: from application import db
+
+Inside python interpreter run: db.create_all()
+
+Exit python interpreter
+
+Run: python application.py
+
+Using your browser go to localhost:5000
 
 DEPENDENCIES
 ============
@@ -17,6 +60,8 @@ https://getbootstrap.com/
 
 ATTRIBUTIONS
 ============
+
+This python code has edit using: http://pep8online.com/.
 
 https://www.google.com.eg/
 
@@ -53,6 +98,8 @@ https://classroom.udacity.com/nanodegrees/nd004-mena/parts/69a88e43-c2b6-4475-be
 https://classroom.udacity.com/nanodegrees/nd004-mena/parts/a8609286-c119-4bc5-b9c9-2a3828080114
 
 https://classroom.udacity.com/nanodegrees/nd004-mena/parts/69a88e43-c2b6-4475-be2b-d6bf58409313/modules/a086501e-a1ff-4b97-8b43-958d58a5a2e4/lessons/d1a03215-1295-4b17-97a3-f0d6e4d8b794/concepts/36483886240923
+
+https://classroom.udacity.com/nanodegrees/nd004-mena/parts/69a88e43-c2b6-4475-be2b-d6bf58409313/modules/undefined/lessons/d1a03215-1295-4b17-97a3-f0d6e4d8b794/concepts/36310386700923
 
 https://www.youtube.com/watch?v=kRNXKzfYrPU
 

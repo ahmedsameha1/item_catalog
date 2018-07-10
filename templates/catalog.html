@@ -1,6 +1,12 @@
-{% extends "skeleton.html" %} 
-{% block title %} Item Catalog {% endblock %} 
+{% extends "skeleton.html" %}
+{% block title %} Item Catalog {% endblock %}
 {% block body %}
+{% if ok %}
+<div class="log"><a href={{url_for("logout")}}>Logout</a></div>
+{% else %}
+<div class="log"><a href={{url_for("google.login")}}>Login</a></div>
+{% endif %}
+        <div class="clearfix"></div>
 <div class="row">
     <div class="col-6">
         <ul class="list-group">

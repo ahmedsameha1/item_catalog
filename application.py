@@ -30,7 +30,7 @@ app.register_blueprint(google_blueprint, url_prefix="/login")
 
 class User(db.Model, UserMixin):
     id = db.Column(db.String(50), primary_key=True)
-    categories = db.relationship("Category", backref="user")
+    items = db.relationship("Item", backref="user")
 
 
 class Authentication(OAuthConsumerMixin, db.Model):
@@ -41,7 +41,6 @@ class Authentication(OAuthConsumerMixin, db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
-    user_id = db.Column(db.String, db.ForeignKey("user.id"))
     items = db.relationship("Item", backref="category")
 
 
@@ -50,6 +49,7 @@ class Item(db.Model):
     name = db.Column(db.String(30), nullable=False)
     description = db.Column(db.String(3000), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+    user_id = db.Column(db.String(50), db.ForeignKey("user.id"))
 
 
 # For flask_marshmallow to work with Item class
@@ -66,10 +66,10 @@ class CategorySchema(ma.ModelSchema):
         model = Category
 
 # To facilitate josnify
-categories_schema = CategorySchema(many=True, exclude=["user"])
-category_schema = CategorySchema(exclude=["user"])
-items_schema = ItemSchema(many=True, exclude=["category"])
-item_schema = ItemSchema(exclude=["category"])
+categories_schema = CategorySchema(many=True)
+category_schema = CategorySchema()
+items_schema = ItemSchema(many=True, exclude=["category", "user"])
+item_schema = ItemSchema(exclude=["category", "user"])
 
 # To make flask dance work with sqlalchemy as a backend
 google_blueprint.backend = SQLAlchemyBackend(
@@ -80,17 +80,6 @@ google_blueprint.backend = SQLAlchemyBackend(
 def create_user(email):
     user = User(id=email)
     db.session.add(user)
-    # Because the app has fixed categories,
-    # we create those categories with the user
-    db.session.add_all([Category(name="Soccer", user=user),
-                        Category(name="Basketball", user=user),
-                        Category(name="Baseball", user=user),
-                        Category(name="Frisbee", user=user),
-                        Category(name="Snowboarding", user=user),
-                        Category(name="Rock Climbing", user=user),
-                        Category(name="Foosball", user=user),
-                        Category(name="Skating", user=user),
-                        Category(name="Hockey", user=user)])
     db.session.commit()
     return user
 
@@ -120,7 +109,7 @@ def logged_in(blueprint, token):
         login_user(user)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/login", methods=["GET"])
 def login():
     if not google.authorized:
         return render_template("login.html")
@@ -132,16 +121,14 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("login"))
+    return redirect(url_for("catalog"))
 
 
-@app.route("/catalog.json")
-@login_required
+# Done
+@app.route("/json")
 def index_json():
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         return jsonify(categories_schema.dump(categories).data)
     except IndexError:
         return jsonify("Resource Error")
@@ -174,13 +161,10 @@ def item_json(category, item):
         return jsonify("Resource Error")
 
 
-@app.route("/catalog")
-@login_required
+@app.route("/")
 def catalog():
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         last_items = []
         for i in categories:
             items = i.items
@@ -189,7 +173,8 @@ def catalog():
             if len(sorted_items) > 0:
                 last_items.append((i.name, sorted_items[0]))
         return render_template("catalog.html",
-                               cats=categories, last_items=last_items)
+                               cats=categories, last_items=last_items,
+                               ok=current_user.is_authenticated)
     except IndexError:
         return render_template("resource_error.html")
 

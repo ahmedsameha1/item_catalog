@@ -174,3 +174,7 @@ https://getbootstrap.com/docs/4.0/components/list-group/
 http://flask.pocoo.org/docs/0.12/tutorial/templates/#layout-html
 
 https://stackoverflow.com/questions/25034812/use-a-css-stylesheet-on-a-jinja2-template
+
+http://flask-login.readthedocs.io/en/latest/
+
+https://stackoverflow.com/a/20422317 by: codeape.

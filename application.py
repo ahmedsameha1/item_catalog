@@ -11,6 +11,7 @@ from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer.backend.sqla import\
     OAuthConsumerMixin, SQLAlchemyBackend
 from flask_dance.consumer import oauth_authorized
+import models
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///item_catalog"
@@ -28,42 +29,18 @@ google_blueprint = make_google_blueprint(
 app.register_blueprint(google_blueprint, url_prefix="/login")
 
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.String(50), primary_key=True)
-    items = db.relationship("Item", backref="user")
-
-
-class Authentication(OAuthConsumerMixin, db.Model):
-    user_id = db.Column(db.String(50), db.ForeignKey(User.id))
-    user = db.relationship(User)
-
-
-class Category(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
-    items = db.relationship("Item", backref="category")
-
-
-class Item(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
-    description = db.Column(db.String(3000), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
-    user_id = db.Column(db.String(50), db.ForeignKey("user.id"))
-
-
-# For flask_marshmallow to work with Item class
+# For flask_marshmallow to work with models.Item class
 class ItemSchema(ma.ModelSchema):
     class Meta:
-        model = Item
+        model = models.Item
 
 
-# For flask_marshmallow to work with Category class
+# For flask_marshmallow to work with models.Category class
 class CategorySchema(ma.ModelSchema):
     items = fields.Nested(ItemSchema, many=True, exclude=("category"))
 
     class Meta:
-        model = Category
+        model = models.Category
 
 # To facilitate josnify
 categories_schema = CategorySchema(many=True)
@@ -73,12 +50,12 @@ item_schema = ItemSchema(exclude=["category", "user"])
 
 # To make flask dance work with sqlalchemy as a backend
 google_blueprint.backend = SQLAlchemyBackend(
-    Authentication, db.session,
+    models.Authentication, db.session,
     user_required=False, user=current_user)
 
 
 def create_user(email):
-    user = User(id=email)
+    user = models.User(id=email)
     db.session.add(user)
     db.session.commit()
     return user
@@ -86,7 +63,7 @@ def create_user(email):
 
 @login_manager.user_loader
 def user_load(user_id):
-    return User.query.get(user_id)
+    return models.User.query.get(user_id)
 
 
 # Instead of showing unauthorized page, redirect to login page
@@ -101,7 +78,7 @@ def logged_in(blueprint, token):
     account_info = google.get("/oauth2/v2/userinfo")
     if account_info.ok:
         email = account_info.json()["email"]
-        query = User.query.filter_by(id=email)
+        query = models.User.query.filter_by(id=email)
         try:
             user = query.one()
         except NoResultFound:
@@ -119,7 +96,7 @@ def logout():
 @app.route("/json")
 def index_json():
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         return jsonify(categories_schema.dump(categories).data)
     except IndexError:
         return jsonify("Resource Error")
@@ -128,7 +105,7 @@ def index_json():
 @app.route("/category/<int:category>/json")
 def items_json(category):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category][0]
         return jsonify(category_schema.dump(cat_obj).data)
     except IndexError:
@@ -138,7 +115,7 @@ def items_json(category):
 @app.route("/category/<int:category>/item/<int:item>/json")
 def item_json(category, item):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category][0]
         item_obj = [n for n in cat_obj.items if n.id == item][0]
         return jsonify(item_schema.dump(item_obj).data)
@@ -149,7 +126,7 @@ def item_json(category, item):
 @app.route("/")
 def catalog():
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         last_items = []
         for i in categories:
             items = i.items
@@ -167,7 +144,7 @@ def catalog():
 @app.route("/category/<int:category_id>")
 def category(category_id):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         return render_template("category.html", cat=cat_obj,
                                ok=current_user.is_authenticated)
@@ -180,7 +157,7 @@ def category(category_id):
 @login_required
 def new_item(category_id):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         # The user browse the page
         if request.method == "GET":
@@ -188,7 +165,7 @@ def new_item(category_id):
                                    ok=current_user.is_authenticated)
         # The user submit the form
         elif request.method == "POST":
-            item_obj = Item(name=request.form["name"],
+            item_obj = models.Item(name=request.form["name"],
                             description=request.form["description"],
                             category=cat_obj, user=current_user)
             db.session.add(item_obj)
@@ -201,7 +178,7 @@ def new_item(category_id):
 @app.route("/category/<int:category_id>/item/<int:item_id>")
 def item(category_id, item_id):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [n for n in cat_obj.items if n.id == item_id][0]
         modify_ok = item_obj.user == current_user
@@ -217,7 +194,7 @@ def item(category_id, item_id):
 @login_required
 def delete_item(category_id, item_id):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [n for n in cat_obj.items if n.id == item_id][0]
         modify_ok = item_obj.user == current_user
@@ -246,7 +223,7 @@ def delete_item(category_id, item_id):
 @login_required
 def edit_item(category_id, item_id):
     try:
-        categories = Category.query.all()
+        categories = models.Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [n for n in cat_obj.items if n.id == item_id][0]
         modify_ok = item_obj.user == current_user

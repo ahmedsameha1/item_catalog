@@ -1,6 +1,12 @@
 {% extends "skeleton.html" %}
 {% block title %} Item: {{ item.name }} {% endblock %}
 {% block body %}
+{% if ok %}
+<div class="log"><a href={{url_for("logout")}}>Logout</a></div>
+{% else %}
+<div class="log"><a href={{url_for("google.login")}}>Login</a></div>
+{% endif %}
+        <div class="clearfix"></div>
 <a href={{url_for("catalog")}}>Catalog</a>
 <span>>></span>
 <a href={{ url_for("category", category_id=cat.id) }}>{{ cat.name }}</a>
@@ -8,11 +14,14 @@
 <h3>Item: {{item.name}}</h3>
 <br/>
 <p><strong>Description:</strong> {{item.description}}</p>
+{% if modify_ok %}
 <div>
         <br/>
 <a href={{ url_for("edit_item", category_id=cat.id,
         item_id=item.id) }} class="submit">Edit</a>
 <a href={{ url_for("delete_item", category_id=cat.id,
-        item_id=item.id) }} class="submit">Delete</a></div>
+        item_id=item.id) }} class="submit">Delete</a>
+</div>
+{% endif %}
 </div>
 {% endblock %}

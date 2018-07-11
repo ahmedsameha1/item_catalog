@@ -1,6 +1,12 @@
 {% extends "skeleton.html" %}
 {% block title %} Delete: {{item.name}} {% endblock %}
 {% block body %}
+{% if ok %}
+<div class="log"><a href={{url_for("logout")}}>Logout</a></div>
+{% else %}
+<div class="log"><a href={{url_for("google.login")}}>Login</a></div>
+{% endif %}
+        <div class="clearfix"></div>
 <a href={{url_for("catalog")}}>Catalog</a>
 <span>>></span>
 <a href={{ url_for("category", category_id=cat.id) }}>{{ cat.name }}</a>

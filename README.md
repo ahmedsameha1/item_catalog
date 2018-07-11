@@ -17,13 +17,11 @@ Run vagrant up
 
 Run vagrant ssh
 
-Run export OAUTHLIB_INSECURE_TRANSPORT=1
-
 Install flask-sqlalchemy https://github.com/mitsuhiko/flask-sqlalchemy
 
 Install flask-login http://flask-login.readthedocs.io/en/latest/#installation
 
-Install marchmallow-sqlalchemy https://github.com/marshmallow-code/marshmallow-sqlalchemy
+Install marshmallow-sqlalchemy https://github.com/marshmallow-code/marshmallow-sqlalchemy
 
 Install flask-marshmallow http://flask-marshmallow.readthedocs.io/en/latest/
 
@@ -41,13 +39,9 @@ Exit psql using \q
 
 Change directory to item_catalog in the vagrant directory
 
-Run: python
+Run: python prepare_database.py
 
-Inside python interpreter run: from application import db
-
-Inside python interpreter run: db.create_all()
-
-Exit python interpreter
+Run export OAUTHLIB_INSECURE_TRANSPORT=1
 
 Run: python application.py
 
@@ -55,6 +49,20 @@ Using your browser go to localhost:5000
 
 DEPENDENCIES
 ============
+
+https://github.com/mitsuhiko/flask-sqlalchemy
+
+http://flask-login.readthedocs.io/en/latest/#installation
+
+https://github.com/marshmallow-code/marshmallow-sqlalchemy
+
+http://flask-marshmallow.readthedocs.io/en/latest/
+
+https://github.com/singingwolfboy/flask-dance
+
+https://pypi.org/project/blinker/
+
+http://flask-dance.readthedocs.io/en/latest/install.html
 
 https://getbootstrap.com/
 

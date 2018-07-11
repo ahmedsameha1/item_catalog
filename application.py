@@ -92,7 +92,7 @@ def user_load(user_id):
 # Instead of showing unauthorized page, redirect to login page
 @login_manager.unauthorized_handler
 def redirect_login():
-    return redirect(url_for("login"))
+    return redirect(url_for("catalog"))
 
 
 # This fuction being called when the authentication is done
@@ -109,14 +109,6 @@ def logged_in(blueprint, token):
         login_user(user)
 
 
-@app.route("/login", methods=["GET"])
-def login():
-    if not google.authorized:
-        return render_template("login.html")
-    else:
-        return redirect(url_for("catalog"))
-
-
 @app.route("/logout")
 @login_required
 def logout():
@@ -124,7 +116,6 @@ def logout():
     return redirect(url_for("catalog"))
 
 
-# Done
 @app.route("/json")
 def index_json():
     try:
@@ -134,26 +125,20 @@ def index_json():
         return jsonify("Resource Error")
 
 
-@app.route("/catalog/category/<int:category>/json")
-@login_required
+@app.route("/category/<int:category>/json")
 def items_json(category):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category][0]
-        return jsonify(items_schema.dump(cat_obj.items).data)
+        return jsonify(category_schema.dump(cat_obj).data)
     except IndexError:
         return jsonify("Resource Error")
 
 
-@app.route("/catalog/category/<int:category>/item/<int:item>/json")
-@login_required
+@app.route("/category/<int:category>/item/<int:item>/json")
 def item_json(category, item):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category][0]
         item_obj = [n for n in cat_obj.items if n.id == item][0]
         return jsonify(item_schema.dump(item_obj).data)
@@ -179,37 +164,33 @@ def catalog():
         return render_template("resource_error.html")
 
 
-@app.route("/catalog/category/<int:category_id>")
-@login_required
+@app.route("/category/<int:category_id>")
 def category(category_id):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
-        return render_template("category.html", cat=cat_obj)
+        return render_template("category.html", cat=cat_obj,
+                               ok=current_user.is_authenticated)
     except IndexError:
         return render_template("resource_error.html")
 
 
-@app.route("/catalog/category/<int:category_id>/item/new",
+@app.route("/category/<int:category_id>/item/new",
            methods=["GET", "POST"])
 @login_required
 def new_item(category_id):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         # The user browse the page
         if request.method == "GET":
-            return render_template("new_item.html", cat=cat_obj)
+            return render_template("new_item.html", cat=cat_obj,
+                                   ok=current_user.is_authenticated)
         # The user submit the form
         elif request.method == "POST":
-            print db.session is db.session
             item_obj = Item(name=request.form["name"],
                             description=request.form["description"],
-                            category=cat_obj)
+                            category=cat_obj, user=current_user)
             db.session.add(item_obj)
             db.session.commit()
             return redirect(url_for("category", category_id=cat_obj.id))
@@ -217,59 +198,66 @@ def new_item(category_id):
         return render_template("resource_error.html")
 
 
-@app.route("/catalog/category/<int:category_id>/item/<int:item_id>")
-@login_required
+@app.route("/category/<int:category_id>/item/<int:item_id>")
 def item(category_id, item_id):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [n for n in cat_obj.items if n.id == item_id][0]
-        return render_template("item.html", cat=cat_obj, item=item_obj)
+        modify_ok = item_obj.user == current_user
+        return render_template("item.html", cat=cat_obj, item=item_obj,
+                               ok=current_user.is_authenticated,
+                               modify_ok=modify_ok)
     except IndexError:
         return render_template("resource_error.html")
 
 
-@app.route("/catalog/category/<int:category_id>/item/<int:item_id>/delete",
+@app.route("/category/<int:category_id>/item/<int:item_id>/delete",
            methods=["GET", "POST"])
 @login_required
 def delete_item(category_id, item_id):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [n for n in cat_obj.items if n.id == item_id][0]
+        modify_ok = item_obj.user == current_user
         # The user browse the page
-        if request.method == "GET":
+        if request.method == "GET" and modify_ok:
             return render_template("delete_item.html",
-                                   cat=cat_obj, item=item_obj)
+                                   cat=cat_obj, item=item_obj,
+                                   ok=current_user.is_authenticated)
+
         # The user submit the form
-        elif request.method == "POST":
+        elif request.method == "POST" and modify_ok:
             db.session.delete(item_obj)
             db.session.commit()
             return redirect(url_for("category", category_id=cat_obj.id))
+
+        # The current user isn't the creator of the current item
+        else:
+            return redirect(url_for("item", category_id=cat_obj.id,
+                                    item_id=item_obj.id))
     except IndexError:
         return render_template("resource_error.html")
 
 
-@app.route("/catalog/category/<int:category_id>/item/<int:item_id>/edit",
+@app.route("/category/<int:category_id>/item/<int:item_id>/edit",
            methods=["GET", "POST"])
 @login_required
 def edit_item(category_id, item_id):
     try:
-        # current user is the current logged in user.
-        # It's an instance of User class
-        categories = current_user.categories
+        categories = Category.query.all()
         cat_obj = [x for x in categories if x.id == category_id][0]
         item_obj = [n for n in cat_obj.items if n.id == item_id][0]
+        modify_ok = item_obj.user == current_user
         # The user browse the page
-        if request.method == "GET":
+        if request.method == "GET" and modify_ok:
             return render_template("edit_item.html", cat=cat_obj,
-                                   item=item_obj, categories=categories)
+                                   item=item_obj, categories=categories,
+                                   ok=current_user.is_authenticated)
+
         # The user submit the form
-        elif request.method == "POST":
+        elif request.method == "POST" and modify_ok:
             item_obj.name = request.form["name"]
             item_obj.description = request.form["description"]
             selected_category = [x for x in categories if x.name ==
@@ -277,8 +265,13 @@ def edit_item(category_id, item_id):
             item_obj.category = selected_category
             db.session.add(item_obj)
             db.session.commit()
-            return redirect(url_for("category",
-                                    category_id=selected_category.id))
+            return redirect(url_for("item", category_id=selected_category.id,
+                                    item_id=item_obj.id))
+
+        # The current user isn't the creator of the current item
+        else:
+            return redirect(url_for("item", category_id=cat_obj.id,
+                                    item_id=item_obj.id))
     except IndexError:
         return render_template("resource_error.html")
 

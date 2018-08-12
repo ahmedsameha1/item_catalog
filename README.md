@@ -69,9 +69,9 @@ https://getbootstrap.com/
 ATTRIBUTIONS
 ============
 
-This python code has edit using: http://pep8online.com/.
+https://www.google.com.eg/ (this URL was copied from Google Chrome browser)
 
-https://www.google.com.eg/
+This python code has been edited using: http://pep8online.com/.
 
 https://www.postgresql.org/docs/9.0/static/sql-createdatabase.html
 
